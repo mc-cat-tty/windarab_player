@@ -1,7 +1,7 @@
 import sys
 from can import Bus
-from lib.parser import ParserTxt
-from lib.player import LogPlayer, PlayerParams
+from windarab_player.parser import ParserTxt
+from windarab_player.player import LogPlayer, PlayerParams, ChannelInfo
 from time import sleep
 
 if __name__ == "__main__":
@@ -13,12 +13,26 @@ if __name__ == "__main__":
   parser = ParserTxt(filename)
   
   params = PlayerParams(
-    (1, 6, 16),
-    {'a': (1, 2, 3)},
-    {'a': 0x00},
-    {'a': lambda x: x},
+    time_points = parser.get_samples()['xtime'],
+    channel_samples = parser.get_samples(),
+    channels = {
+      'IMU_LAT': ChannelInfo(
+        0x471,
+        lambda data: data * 16777216
+      ),
+      'IMU_LONG': ChannelInfo(
+        0x471,
+        lambda data: (data * 8388608) << 32
+      ),
+      'nmot': ChannelInfo(
+        0x702,
+        lambda data: data
+      )
+    },
     # Bus(interface="socketcan", channel="vcan0", bitrate=1e6)
   )
   player = LogPlayer(params)
   player.start()
+  sleep(7)
+  player.stop()
   while (True): ...
