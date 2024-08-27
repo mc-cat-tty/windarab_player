@@ -1,37 +1,40 @@
 import re, sys
 from typing import Generator
+from utils import transpose
 
-class Parser:
+class ParserTxt:
   COMMENT_REGEX = re.compile(r"\w*#.*")
-  HEADER_ENTRY_REGEX = re.compile(r".+?]")
-  UNIT_OF_MEASUREMENT_REGEX = re.compile("\[.+\]")
+  HEADER_ENTRY_REGEX = re.compile(r".*?]")
+  UNIT_OF_MEASUREMENT_REGEX = re.compile("\[.*\]")
 
   def __init__(self, filename: str):
     self.filename = filename
 
   @staticmethod
-  def is_comment(line: str):
-    return bool(Parser.COMMENT_REGEX.match(line))
+  def is_comment(line: str) -> bool:
+    return bool(ParserTxt.COMMENT_REGEX.match(line))
 
   @staticmethod  
-  def is_empty(line: str):
-    return bool(line.strip())
+  def is_empty(line: str) -> bool:
+    return not line.strip()
   
-  def get_lines(self) -> Generator[str]:
-    with open(self.filename, 'r') as file:
+  def get_lines(self) -> Generator[str, None, None]:
+    with open(self.filename, 'r', errors="replace") as file:
       return filter(
-        file.readlines(),
-        lambda line: not (Parser.is_empty(line) or Parser.is_comment(line))
+        lambda line: not (ParserTxt.is_empty(line) or ParserTxt.is_comment(line)),
+        file.readlines()
       )
   
-  def get_header(self) -> Generator[str]:
+  def get_header(self) -> Generator[str, None, None]:
+    lines = list(self.get_lines())
+
     return map(
-      str.strip(),
-      Parser.HEADER_ENTRY_REGEX.findall(self.get_lines()[0])
+      str.strip,
+      ParserTxt.HEADER_ENTRY_REGEX.findall(lines[0])
     )
 
   def get_unit_of_measurements(self) -> dict[str, str]:
-    get_signal_um = lambda entry: Parser.UNIT_OF_MEASUREMENT_REGEX.search(entry, 1).group()
+    get_signal_um = lambda entry: ParserTxt.UNIT_OF_MEASUREMENT_REGEX.search(entry, 1).group()
     get_signal_name = lambda entry: entry.split(get_signal_um(entry))[0].strip()
 
     return {
@@ -40,17 +43,30 @@ class Parser:
     }
   
   @staticmethod
-  def parse_sample(sample_line: str) -> Generator[str]:
+  def parse_line(sample_line: str) -> Generator[str, None, None]:
     return map(
       str.strip,
-      re.split(r" +", sample_line)[1:]
+      re.split("\t *", sample_line)
     )
 
   def get_samples(self) -> dict[str, str]:
-    return 
+    lines = list(self.get_lines())
+
+    unlabeled_samples = transpose(
+      list(
+        map(
+          ParserTxt.parse_line,
+          lines[1:]  # Discard header line
+        )
+      )
+    )
+
+    return dict(
+      zip(self.get_unit_of_measurements().keys(), unlabeled_samples)
+    )
 
 
 if __name__ == "__main__":
-  p = Parser(sys.argv[1])
+  p = ParserTxt(sys.argv[1])
   print(p.get_unit_of_measurements())
-  print(p.get_samples())
+  print(p.get_samples()['xtime'])
