@@ -1,6 +1,6 @@
 import re, sys
 from typing import Generator
-from windarab_player.utils import transpose
+from windarab_player.utils import transpose, eval_literal_str
 
 class ParserTxt:
   COMMENT_REGEX = re.compile(r"\w*#.*")
@@ -45,8 +45,11 @@ class ParserTxt:
   @staticmethod
   def parse_line(sample_line: str) -> Generator[str, None, None]:
     return map(
-      str.strip,
-      re.split("\t *", sample_line)
+      eval_literal_str,
+      map(
+        str.strip,
+        re.split("\t *", sample_line)
+      )
     )
 
   def get_samples(self) -> dict[str, str]:
