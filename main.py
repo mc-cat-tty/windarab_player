@@ -1,8 +1,9 @@
 import sys
-from can import Bus
+#from can import Bus
 from windarab_player.parser import ParserTxt
 from windarab_player.player import LogPlayer, PlayerParams, ChannelInfo
 from struct import pack
+import time
 
 if __name__ == "__main__":
   if len(sys.argv) < 2:
@@ -18,11 +19,11 @@ if __name__ == "__main__":
     channels = {
       'IMU_LAT': ChannelInfo(
         0x471,
-        lambda data: int.from_bytes(pack("<f", data * 16777216))
+        lambda data: (int)(((int)(data * 100000000)) / 100000000) * 16777216
       ),
       'IMU_LONG': ChannelInfo(
         0x471,
-        lambda data: int.from_bytes(pack("<f", data * 8388608)) << 32
+        lambda data: (int)(((int)(data * 100000000) * 8388608) / 100000000) << 32
       ),
       'nmot': ChannelInfo(
         0x702,
@@ -32,5 +33,8 @@ if __name__ == "__main__":
     # Bus(interface="socketcan", channel="vcan0", bitrate=1e6)
   )
   player = LogPlayer(params)
+  
   player.start()
+  time.sleep(5)
+  player.stop()
   while (True): ...

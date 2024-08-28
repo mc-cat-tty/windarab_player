@@ -1,4 +1,4 @@
-import sys, can
+import sys#, can
 from typing import Any, Callable
 from dataclasses import dataclass
 from threading import Thread
@@ -34,6 +34,7 @@ class LogPlayer:
     for channel_label, channel_info in self.params.channels.items():
       id = channel_info.can_id
       format_fn = channel_info.can_fmt_fn
+      #print(f"id:{id} adding: {self.params.channel_samples[channel_label][idx]}\n")
       messages[id] |= format_fn(self.params.channel_samples[channel_label][idx])
 
     for can_id, payload in messages.items():
