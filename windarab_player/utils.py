@@ -8,4 +8,4 @@ def eval_literal_str(literal: str):
   return ast.literal_eval(literal.title())
 
 def float_to_ecu_int(val: float, ratio: int) -> int:
-  return int.from_bytes(pack(">i", int(val * ratio)))
+  return int.from_bytes(pack(">i", int(val * ratio)), byteorder='big')
