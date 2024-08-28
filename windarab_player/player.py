@@ -29,7 +29,7 @@ class LogPlayer:
       sleep(1e-2)
 
   def send(self, idx):
-    messages = defaultdict(bytes)
+    messages = defaultdict(int)
 
     for channel_label, channel_info in self.params.channels.items():
       id = channel_info.can_id
@@ -41,7 +41,7 @@ class LogPlayer:
       # self.params.can_interface.send(
       #   can.Message(
       #     arbitration_id=can_id,
-      #     data=[0, 25, 0, 1, 3, 1, 4, 1],
+      #     data=int.to_bytes(payload),
       #     is_extended_id=False
       #   )
       # )
