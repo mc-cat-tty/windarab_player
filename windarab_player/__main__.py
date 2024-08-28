@@ -52,3 +52,5 @@ if __name__ == "__main__":
     if keys[pygame.K_SPACE]: player.start()
     if keys[pygame.K_RETURN]: player.play()
     if keys[pygame.K_BACKSPACE]: player.pause()
+    if keys[pygame.K_UP]: player.speed_up()
+    if keys[pygame.K_DOWN]: player.slow_down()

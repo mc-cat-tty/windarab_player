@@ -23,6 +23,7 @@ class LogPlayer:
     self.tx_thread = Thread(target=self.player, name="player_thread")
     self.killed = False
     self.paused = False
+    self.speed_factor = 1
 
   def paused_busy_wait(self):
     while self.paused:
@@ -49,7 +50,8 @@ class LogPlayer:
   def player(self):
     for idx, _ in enumerate(self.params.time_points):
       if idx != 0:
-        sleep(self.params.time_points[idx] - self.params.time_points[idx-1])
+        dt = self.params.time_points[idx] - self.params.time_points[idx-1]
+        sleep(dt/self.speed_factor)
       if self.killed: sys.exit()
       self.paused_busy_wait()
       self.send(idx)
@@ -71,3 +73,10 @@ class LogPlayer:
     print("PLAY")
     self.paused = False
   
+  def speed_up(self):
+    self.speed_factor = self.speed_factor+1
+    print(f"{self.speed_factor=}")
+
+  def slow_down(self):
+    self.speed_factor = max(1, self.speed_factor-1)
+    print(f"{self.speed_factor=}")
