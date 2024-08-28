@@ -55,13 +55,19 @@ class LogPlayer:
       self.send(idx)
     
   def start(self):
-    self.tx_thread.start()
+    print("START")
+    if not self.tx_thread.is_alive():
+      self.tx_thread.start()
   
   def stop(self):
+    print("STOP")
     self.killed = True
 
   def pause(self):
+    print("PAUSE")
     self.paused = True
   
   def play(self):
+    print("PLAY")
     self.paused = False
+  
