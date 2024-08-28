@@ -37,7 +37,7 @@ class LogPlayer:
       messages[id] |= format_fn(self.params.channel_samples[channel_label][idx])
 
     for can_id, payload in messages.items():
-      print(f"Sending {payload} on CAN ID {can_id}")
+      print(f"Sending {payload:x} on CAN ID {can_id:x}")
       # self.params.can_interface.send(
       #   can.Message(
       #     arbitration_id=can_id,
