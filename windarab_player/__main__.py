@@ -31,9 +31,10 @@ if __name__ == "__main__":
       'nmot': ChannelInfo(
         0x702,
         lambda data: data
-      )
+      ),
+      
     },
-    # Bus(interface="socketcan", channel="vcan0", bitrate=1e6)
+    can_interface = Bus(interface="socketcan", channel="can0", bitrate=1e6)
   )
 
   player = LogPlayer(params)
