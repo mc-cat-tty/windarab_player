@@ -1,4 +1,5 @@
 import sys
+import windarab_player.utils as utils
 from can import Bus
 from windarab_player.parser import ParserTxt
 from windarab_player.player import LogPlayer, PlayerParams, ChannelInfo
@@ -18,11 +19,11 @@ if __name__ == "__main__":
     channels = {
       'IMU_LAT': ChannelInfo(
         0x471,
-        lambda data: int.from_bytes(pack("<f", data * 16777216))
+        lambda data: utils.float_to_ecu_int(data, 16777216) << 32
       ),
       'IMU_LONG': ChannelInfo(
         0x471,
-        lambda data: int.from_bytes(pack("<f", data * 8388608)) << 32
+        lambda data: utils.float_to_ecu_int(data, 8388608)
       ),
       'nmot': ChannelInfo(
         0x702,
