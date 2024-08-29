@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from threading import Thread
 from time import sleep
 from collections import defaultdict
+from windarab_player.lap_counter import LapCounter
 
 @dataclass(frozen=True)
 class ChannelInfo:
@@ -24,6 +25,7 @@ class LogPlayer:
     self.killed = False
     self.paused = False
     self.speed_factor = 1
+    self.lap_counter = LapCounter()
 
   def paused_busy_wait(self):
     while self.paused:
@@ -55,6 +57,12 @@ class LogPlayer:
         sleep(dt/self.speed_factor)
       if self.killed: sys.exit()
       self.paused_busy_wait()
+
+      curr_lat = self.params.channel_samples['IMU_LAT'][idx]
+      curr_lon = self.params.channel_samples['IMU_LONG'][idx]
+      self.lap_counter.process_lap_trigger_manual(curr_lat, curr_lon)
+      print(f"LAP COUNTER: {self.lap_counter.lap_count}")
+
       self.send(idx)
     
   def start(self):
