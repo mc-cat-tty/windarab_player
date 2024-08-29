@@ -1,5 +1,5 @@
 import sys, pygame
-from can import Bus
+#from can import Bus
 from windarab_player.gps import compute_scale
 from windarab_player.channels_config import CHANNELS_CONFIG
 from windarab_player.parser import ParserTxt
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     time_points = samples['xtime'],
     channel_samples = samples,
     channels = CHANNELS_CONFIG,
-    can_interface = Bus(interface="socketcan", channel="can0", bitrate=1e6)
+    #can_interface = Bus(interface="socketcan", channel="can0", bitrate=1e6)
   )
 
   player = LogPlayer(params)

@@ -1,4 +1,4 @@
-import sys, can
+import sys#, can
 from typing import Any, Callable
 from dataclasses import dataclass
 from threading import Thread
@@ -15,7 +15,7 @@ class PlayerParams:
   time_points: list[float]
   channels: dict[str, ChannelInfo]
   channel_samples: dict[str, list[Any]]
-  can_interface: can.Bus
+  #can_interface: can.Bus
 
 class LogPlayer:
   def __init__(self, params: PlayerParams):
@@ -40,13 +40,13 @@ class LogPlayer:
     for can_id, payload in messages.items():
       if (messages[id] < 0): continue
       print(f"Sending {payload:x} on CAN ID {can_id:x}")
-      self.params.can_interface.send(
-        can.Message(
-          arbitration_id=can_id,
-          data=int.to_bytes(payload, 8, byteorder='little'),
-          is_extended_id=False
-        )
-      )
+      #self.params.can_interface.send(
+      #  can.Message(
+      #    arbitration_id=can_id,
+      #    data=int.to_bytes(payload, 8, byteorder='little'),
+      #    is_extended_id=False
+      #  )
+      #)
 
   def player(self):
     for idx, _ in enumerate(self.params.time_points):
