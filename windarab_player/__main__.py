@@ -1,6 +1,6 @@
-import sys
-import pygame
+import sys, pygame
 from can import Bus
+from windarab_player.gps import compute_scale
 from windarab_player.channels_config import CHANNELS_CONFIG
 from windarab_player.parser import ParserTxt
 from windarab_player.player import LogPlayer, PlayerParams
@@ -15,10 +15,11 @@ if __name__ == "__main__":
 
   filename = sys.argv[1]
   parser = ParserTxt(filename)
+  samples = parser.get_samples()
   
   params = PlayerParams(
-    time_points = parser.get_samples()['xtime'],
-    channel_samples = parser.get_samples(),
+    time_points = samples['xtime'],
+    channel_samples = samples,
     channels = CHANNELS_CONFIG,
     can_interface = Bus(interface="socketcan", channel="can0", bitrate=1e6)
   )
@@ -26,8 +27,17 @@ if __name__ == "__main__":
   player = LogPlayer(params)
 
   pygame.init()
-  screen = pygame.display.set_mode((500, 500))
+  WIN_SIZE = 500
+  screen = pygame.display.set_mode((WIN_SIZE, WIN_SIZE))
   clock = pygame.time.Clock()
+
+  sx, sy = compute_scale(
+    min(samples["IMU_LAT"]),
+    max(samples["IMU_LAT"]),
+    min(samples["IMU_LONG"]),
+    max(samples["IMU_LONG"]),
+    WIN_SIZE
+  )
 
   while (True):
     clock.tick(10)
@@ -41,3 +51,6 @@ if __name__ == "__main__":
     if keys[pygame.K_BACKSPACE]: player.pause()
     if keys[pygame.K_UP]: player.speed_up()
     if keys[pygame.K_DOWN]: player.slow_down()
+
+    pygame.draw.circle(screen, (1, 0, 0), pygame.mouse.get_pos(), 10, 10)
+    print(pygame.mouse.get_pos())
