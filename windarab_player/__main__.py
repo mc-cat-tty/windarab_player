@@ -53,6 +53,3 @@ if __name__ == "__main__":
     if keys[pygame.K_BACKSPACE]: player.pause()
     if keys[pygame.K_UP]: player.speed_up()
     if keys[pygame.K_DOWN]: player.slow_down()
-
-    pygame.draw.circle(screen, (1, 0, 0), pygame.mouse.get_pos(), 10, 10)
-    print(pygame.mouse.get_pos())
