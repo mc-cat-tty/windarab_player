@@ -14,6 +14,7 @@ class ChannelInfo:
 class PlayerParams:
   time_points: list[float]
   channels: dict[str, ChannelInfo]
+  endianness: dict[int, str]
   channel_samples: dict[str, list[Any]]
   can_interface: can.Bus
 
@@ -39,11 +40,11 @@ class LogPlayer:
 
     for can_id, payload in messages.items():
       if (messages[id] < 0): continue
-      print(f"Sending {payload:x} on CAN ID {can_id:x}")
+      print(f"Sending {payload:x} on CAN ID {can_id:x} with endianness {self.params.endianness[can_id]}")
       self.params.can_interface.send(
         can.Message(
           arbitration_id=can_id,
-          data=int.to_bytes(payload, 8, byteorder='little'),
+          data=int.to_bytes(payload, 8, byteorder=self.params.endianness[can_id]),
           is_extended_id=False
         )
       )
@@ -68,6 +69,7 @@ class LogPlayer:
 
   def pause(self):
     print("PAUSE")
+
     self.paused = True
   
   def play(self):
