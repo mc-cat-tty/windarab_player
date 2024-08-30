@@ -58,9 +58,9 @@ class LogPlayer:
 
   def player(self):
     for idx, _ in enumerate(self.params.time_points):
-      print(f"{self.params.time_points[idx]=}")
+      #print(f"{self.params.time_points[idx]=}")
       lapctr = self.params.channel_samples["lapctr"][idx]
-      print(f"{lapctr=}")
+      #print(f"{lapctr=}")
       if idx != 0:
         dt = self.params.time_points[idx] - self.params.time_points[idx-1]
         sleep(dt/self.speed_factor)
@@ -79,7 +79,6 @@ class LogPlayer:
 
   def pause(self):
     print("PAUSE")
-
     self.paused = True
   
   def play(self):

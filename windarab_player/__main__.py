@@ -63,7 +63,7 @@ def process_lap_trigger_manual(currentPoint: GpsPoint):
   ):
     isInsideStartingZone = True
   
-  print(f"Distance {gps_distance(startPoint, currentPoint)}")
+  #print(f"Distance {gps_distance(startPoint, currentPoint)}")
 
 
 if __name__ == "__main__":
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     channel_samples = samples,
     channels = CHANNELS_CONFIG,
     endianness = ENDIANNESS_CONFIG,
-    can_interface = Bus(interface="socketcan", channel="vcan0", bitrate=1e6)
+    can_interface = Bus(interface="socketcan", channel="can0", bitrate=1e6)
   )
 
   player = LogPlayer(params)
@@ -114,6 +114,5 @@ if __name__ == "__main__":
     pygame.draw.circle(screen, (1, 0, 0), pygame.mouse.get_pos(), 10, 10)
     
     process_lap_trigger_manual(shared_state.current_pos)
-    print(f"{shared_state.rpm=}")
+    #print(f"{shared_state.rpm=}")
     print(f"{shared_state.lap=}")
-    
