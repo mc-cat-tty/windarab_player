@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from threading import Thread
 from time import sleep
 from collections import defaultdict
+from windarab_player import shared_state
 
 @dataclass(frozen=True)
 class ChannelInfo:
@@ -14,6 +15,7 @@ class ChannelInfo:
 class PlayerParams:
   time_points: list[float]
   channels: dict[str, ChannelInfo]
+  endianness: dict[int, str]
   channel_samples: dict[str, list[Any]]
   can_interface: can.Bus
 
@@ -35,18 +37,24 @@ class LogPlayer:
     for channel_label, channel_info in self.params.channels.items():
       id = channel_info.can_id
       format_fn = channel_info.can_fmt_fn
-      messages[id] |= format_fn(self.params.channel_samples[channel_label][idx])
+      messages[id] |= format_fn(value := self.params.channel_samples[channel_label][idx])
+      
+      if channel_label == "nmot": shared_state.rpm = value
+      if channel_label == "IMU_LAT": shared_state.current_pos.latitude = value 
+      if channel_label == "IMU_LONG": shared_state.current_pos.longitude = value
 
     for can_id, payload in messages.items():
       if (messages[id] < 0): continue
-      print(f"Sending {payload:x} on CAN ID {can_id:x}")
+      print(f"Sending {payload:x} on CAN ID {can_id:x} with endianness {self.params.endianness[can_id]}")
       self.params.can_interface.send(
         can.Message(
           arbitration_id=can_id,
-          data=int.to_bytes(payload, 8, byteorder='little'),
+          data=int.to_bytes(payload, 8, byteorder=self.params.endianness[can_id]),
           is_extended_id=False
         )
       )
+
+    
 
   def player(self):
     for idx, _ in enumerate(self.params.time_points):
@@ -68,6 +76,7 @@ class LogPlayer:
 
   def pause(self):
     print("PAUSE")
+
     self.paused = True
   
   def play(self):
