@@ -23,7 +23,7 @@ if __name__ == "__main__":
     channel_samples = samples,
     endianness = ENDIANNESS_CONFIG,
     channels = CHANNELS_CONFIG,
-    can_interface = Bus(interface="socketcan", channel="vcan0", bitrate=1e6)
+    can_interface = Bus(interface="socketcan", channel="can0", bitrate=1e6)
   )
 
   player = LogPlayer(params)
